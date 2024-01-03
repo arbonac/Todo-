@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo List with Redux</title>
+  <script src="https://unpkg.com/redux@4.1.1/dist/redux.min.js"></script>
+  <style>
+    body {
+      padding: 2em;
+      font-family: Arial, sans-serif;
+    }
+
+    #todoInput {
+      padding: 1em;
+      font-size: 1em;
+      margin-right: 1em;
+    }
+
+    button {
+      padding: 1em;
+      font-size: 1em;
+      background: lightgray;
+      border: none;
+      cursor: pointer;
+    }
+
+    ul#todos {
+      margin-top: 2em;
+    }
+
+    ul#todos li {
+      margin-bottom: 1em;
+      cursor: pointer;
+    }
+
+    ul#todos li.completed {
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+<body>
+  <input type="text" id="todoInput" placeholder="Enter new todo..." />
+  <button onclick="addTodo()">Add Todo</button>
+  <ul id="todos"></ul>
+  <button onclick="clearCompleted()">Clear Completed</button>
+
+  <script>
+    const ADD_TODO = 'ADD_TODO';
+    const TOGGLE_TODO = 'TOGGLE_TODO';
+    const CLEAR_COMPLETED = 'CLEAR_COMPLETED';
+
+    const initialState = {
+      todos: []
+    };
+
+    function myTodoApp(state = initialState, action) {
+      switch (action.type) {
+        case ADD_TODO:
+          return {
+            todos: [...state.todos, { text: action.text, completed: false }]
+          };
+        case TOGGLE_TODO:
+          return {
+            todos: state.todos.map((todo, index) =>
+              action.index === index ? { ...todo, completed: !todo.completed } : todo
+            )
+          };
+        case CLEAR_COMPLETED:
+          return {
+            todos: state.todos.filter(todo => !todo.completed)
+          };
+        default:
+          return state;
+      }
+    }
+
+    const store = Redux.createStore(myTodoApp);
+
+    function addTodo() {
+      const input = document.getElementById('todoInput');
+      const text = input.value;
+      input.value = '';
+      store.dispatch({ type: ADD_TODO, text });
+    }
+
+    function toggleTodo(index) {
+      store.dispatch({ type: TOGGLE_TODO, index });
+    }
+
+    function clearCompleted() {
+      store.dispatch({ type: CLEAR_COMPLETED });
+    }
+
+    function render() {
+      const state = store.getState();
+      const todosContainer = document.getElementById('todos');
+      todosContainer.innerHTML = '';
+      state.todos.forEach((todo, index) => {
+        const todoEl = document.createElement('li');
+        todoEl.textContent = todo.text;
+        todoEl.className = todo.completed ? 'completed' : '';
+        todoEl.addEventListener('click', () => toggleTodo(index));
+        todosContainer.appendChild(todoEl);
+      });
+    }
+
+    store.subscribe(render);
+    render();
+  </script>
+</body>
+</html>
+
+
+</script>
+</body>
+</html>
