@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo App</title>
+    <style>
+        .content {
+            text-align: center;
+            font-size: 2em;
+        }
+        .todo-item {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <a style="position:absolute;top:0;left:0;" href="file:///C:/Users/14706/OneDrive/stories.html">Stories</a>
+    <a style="position:absolute;top:0;left:60px;" href="file:///C:/Users/14706/OneDrive/Readme.txt">Readme</a>
+    <div id="root" class="content"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.5/redux.min.js"></script>
+    <script>
+        const { createStore } = Redux;
+
+        const initialState = {
+            todoList: []
+        }
+
+        function rootReducer(state = initialState, action) {
+            switch (action.type) {
+                case 'ADD_TODO':
+                    return Object.assign({}, state, {
+                        todoList: state.todoList.concat(action.payload)
+                    });
+                case 'REMOVE_TODO':
+                    return Object.assign({}, state, {
+                        todoList: state.todoList.filter(todo => todo != action.payload)
+                    });
+                default:
+                    return state;
+            }
+        }
+
+        const store = createStore(rootReducer);
+
+        function render() {
+            const state = store.getState();
+            const root = document.getElementById('root');
+            root.innerHTML = '';
+            state.todoList.forEach(todo => {
+                const todoItem = document.createElement('div');
+                todoItem.innerHTML = todo;
+                todoItem.addEventListener('click', () => {store.dispatch({ type: 'REMOVE_TODO', payload: todo })});
+                root.appendChild(todoItem);
+            });
+        }
+
+        store.subscribe(render);
+        // dispatch initial action to render initial state
+        store.dispatch({ type: 'ADD_TODO', payload: '' });
+    </script>
+</body>
+</html>
